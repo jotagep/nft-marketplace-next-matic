@@ -1,5 +1,4 @@
-/* eslint-disable import/no-anonymous-default-export */
-import { useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { ethers } from 'ethers'
 import axios from 'axios'
 import Web3Modal from 'web3modal'
@@ -22,11 +21,7 @@ export const loadingState = {
 const useNft = () => {
     const [nfts, setNfts] = useState({items: [], loading: loadingState.notLoaded})
 
-    useEffect(() => {
-        loadNfts()
-    }, [])
-
-    const loadNfts = async () => {
+    const loadNfts = useCallback(() => async () => {
         const provider = new ethers.providers.JsonRpcProvider()
         const tokenContract = new ethers.Contract(nftAddress, NFT.abi, provider)
         const marketContract = new ethers.Contract(nftMarketAddress, Market.abi, provider)
@@ -53,10 +48,10 @@ const useNft = () => {
             items,
             loading: loadingState.loaded
         })
-    }
+    }, [setNfts])
 
-    const buyNft = async (nft) => {
-        const web3Modal = new web3Modal()
+    const buyNft = useCallback(() => async (nft) => {
+        const web3Modal = new Web3Modal()
         const connection = await web3Modal.connect()
         const provider = new ethers.providers.Web3Provider(connection)
 
@@ -68,10 +63,11 @@ const useNft = () => {
 
         await transaction.wait()
         loadNfts()
-    }
+    }, [loadNfts])
 
     return {
         nfts,
+        loadNfts,
         buyNft
     }
 }

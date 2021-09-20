@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react'
-import { ethers } from 'ethers'
+import { useEffect } from 'react'
 
 import Image from 'next/image'
 
@@ -9,8 +8,14 @@ export default function Home() {
 
   const { 
     nfts: { items, loading }, 
+    loadNfts,
     buyNft 
   } = useNft()
+
+
+  useEffect(() => {
+    loadNfts()
+  }, [loadNfts])
 
   const handleBuy = (nft) => () => {
     buyNft(nft)

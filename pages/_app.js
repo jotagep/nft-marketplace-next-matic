@@ -2,32 +2,31 @@ import '../styles/globals.css'
 import Link from 'next/link'
 
 
+const HeaderLink = ({children, href}) =>
+  <Link href={href}>
+    <a className="mr-4 p-2 hover:text-pink-500">
+      {children}
+    </a>
+  </Link>
+
 function MyApp({ Component, pageProps }) {
   return (
     <div>
       <nav className="flex justify-between border-b p-6">
         <h1 className="text-4xl font-bold">NFT Marketplace</h1>
         <div className="flex items-center">     
-          <Link href="/">
-            <a className="mr-4 text-pink-500">
+          <HeaderLink href="/">
               Home
-            </a>
-          </Link>
-          <Link href="/create-item">
-            <a className="mr-6 text-pink-500">
+          </HeaderLink>
+          <HeaderLink href="/create-item">
               Sell Digital Asset
-            </a>
-          </Link>
-          <Link href="/my-assets">
-            <a className="mr-6 text-pink-500">
+          </HeaderLink>
+          <HeaderLink href="/my-assets">
               My Digital Assets
-            </a>
-          </Link>
-          <Link href="/my-assets">
-            <a className="mr-6 text-pink-500">
+          </HeaderLink>
+          <HeaderLink href="/my-assets">
               Creator Dashboard
-            </a>
-          </Link>
+          </HeaderLink>
         </div>
       </nav>
       <Component {...pageProps} />
