@@ -1,27 +1,61 @@
 /* eslint-disable @next/next/no-img-element */
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 
-import Image from 'next/image'
+import useNFT from '../hooks/useNft'
+import { addIpfs, addIpfsImage } from '../services/ipfs';
 
-import Ipfs from '../services/ipfs';
+const defaultState = {
+  description: '',
+  name: '',
+  price: '',
+  fileUrl: ''
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 
 const CreateItem = () => {
-    const [formInput, setFormInput] = useState({
-        description: '',
-        name: '',
-        price: '',
-        fileUrl: ''
-    });
+    const [formInput, setFormInput] = useState(defaultState);
+    const [loading, setLoading] = useState(false);
     const router = useRouter()
 
-    const createMarket = () => {
+    const { 
+      createSale
+    } = useNFT()
 
+    useEffect(() => {
+      return () => {
+        setFormInput(defaultState)
+      }
+    }, [])
+
+    const handleCreateAsset = async () => {
+      const { name, description, price, fileUrl } = formInput;
+      if (!name || !description || !price || !fileUrl) return;
+
+      try {
+        setLoading(true)
+        const urlImage = await addIpfsImage(fileUrl)
+        const data = JSON.stringify({
+          name, description, image: urlImage
+        });  
+        const url = await addIpfs(data)
+        await sleep(200);
+        await createSale(url, price)
+        setLoading(false)
+        console.log('URL: ', url)
+        router.replace('/')
+      } catch (error) {
+        console.log('Error uploading file: ', error);
+      }
     }
 
     return (
-        <div className="flex justify-center">
+        <div className={`flex justify-center ${loading ? 'opacity-50': ''}`}>
           <div className="w-1/2 flex flex-col pb-12">
             <input 
               placeholder="Asset Name"
@@ -34,7 +68,7 @@ const CreateItem = () => {
               onChange={e => setFormInput({ ...formInput, description: e.target.value })}
             />
             <input
-              placeholder="Asset Price in Eth"
+              placeholder="Asset Price in Matic"
               className="mt-2 border rounded p-4"
               onChange={e => setFormInput({ ...formInput, price: e.target.value })}
             />
@@ -54,7 +88,7 @@ const CreateItem = () => {
                 />
               )
             }
-            <button onClick={createMarket} className="font-bold mt-4 bg-pink-500 text-white rounded p-4 shadow-lg">
+            <button onClick={handleCreateAsset} className="font-bold mt-4 bg-pink-500 hover:bg-pink-600 text-white rounded p-4 shadow-lg">
               Create Digital Asset
             </button>
           </div>

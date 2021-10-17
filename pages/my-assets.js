@@ -2,33 +2,27 @@ import { useEffect } from 'react'
 
 import Image from 'next/image'
 
-import useNft, { loadingState } from '../hooks/useNft'
+import useNft, { loadingState, loadType } from '../hooks/useNft'
 
-export default function Home() {
+export default function MyAsset() {
 
   const { 
     nfts: { items, loading }, 
-    loadMarketNfts,
-    buyNft 
+    loadNfts
   } = useNft()
+
 
   useEffect(() => {
     const load = async () => {
-      await loadMarketNfts();
+      await loadNfts({ type: loadType.owned });
     }
     load();
-  }, [loadMarketNfts])
-
-  const handleBuy = (nft) => () => {
-    buyNft(nft)
-  }
-
-  console.log(items, loading)
+  }, [loadNfts])
 
   if (loading === loadingState.loaded && !items.length ) {
     return (
       <h2 className="px-20 py-10 text-3xl">
-        - No items in marketplace -
+        - No items owned -
       </h2>
     )
   }
@@ -52,12 +46,6 @@ export default function Home() {
               </div>
               <div className="p-4 bg-black">
                 <p className="text-2xl mb-4 font-bold text-white">{item.price} Matic</p>
-                <button 
-                  className="w-full bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-12 rounded" 
-                  onClick={handleBuy(item)}
-                >
-                  Buy
-                </button>
               </div>
             </div>
           ))}

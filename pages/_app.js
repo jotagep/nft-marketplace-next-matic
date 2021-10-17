@@ -24,7 +24,7 @@ function MyApp({ Component, pageProps }) {
           <HeaderLink href="/my-assets">
               My Digital Assets
           </HeaderLink>
-          <HeaderLink href="/my-assets">
+          <HeaderLink href="/create-dashboard">
               Creator Dashboard
           </HeaderLink>
         </div>
